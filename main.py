@@ -16,9 +16,10 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
         self.snake = [(WIDTH // 2, HEIGHT // 2)]
         self.direction = (BLOCK_SIZE, 0)  # 초기 방향: 오른쪽
-        self.food = self.spawn_food()
+        self.food = [self.spawn_food(), self.spawn_food()]  # 먹이를 2개로 설정
         self.score = 0
         self.running = True
+        self.font = pygame.font.SysFont("Arial", 24)
 
     def spawn_food(self):
         x = random.randint(0, (WIDTH // BLOCK_SIZE) - 1) * BLOCK_SIZE
@@ -30,16 +31,23 @@ class SnakeGame:
             pygame.draw.rect(self.screen, SNAKE_COLOR, (*segment, BLOCK_SIZE, BLOCK_SIZE))
 
     def draw_food(self):
-        pygame.draw.rect(self.screen, FOOD_COLOR, (*self.food, BLOCK_SIZE, BLOCK_SIZE))
+        for food_item in self.food:
+            pygame.draw.rect(self.screen, FOOD_COLOR, (*food_item, BLOCK_SIZE, BLOCK_SIZE))
+
+    def draw_score(self):
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        self.screen.blit(score_text, (10, 10))
 
     def move_snake(self):
         head_x, head_y = self.snake[0]
         new_head = (head_x + self.direction[0], head_y + self.direction[1])
         self.snake.insert(0, new_head)
 
-        if new_head == self.food:
+        if new_head in self.food:
             self.score += 1
-            self.food = self.spawn_food()
+            self.food.remove(new_head)  # 먹이를 제거
+            # 새로운 먹이를 추가
+            self.food.append(self.spawn_food())
         else:
             self.snake.pop()
 
@@ -69,6 +77,7 @@ class SnakeGame:
             self.check_collision()
             self.draw_snake()
             self.draw_food()
+            self.draw_score()  # 점수 표시
 
             pygame.display.flip()
             self.clock.tick(10)  # 게임 속도 조절
@@ -77,4 +86,4 @@ class SnakeGame:
 
 if __name__ == "__main__":
     game = SnakeGame()
-    game.run()
+game.run()  # 게임 실행
