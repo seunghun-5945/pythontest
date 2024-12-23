@@ -7,6 +7,7 @@ BLOCK_SIZE = 20
 SNAKE_COLOR = (0, 255, 0)
 FOOD_COLOR = (255, 0, 0)
 BACKGROUND_COLOR = (0, 0, 0)
+FONT_COLOR = (255, 255, 255)
 
 class SnakeGame:
     def __init__(self):
@@ -19,6 +20,7 @@ class SnakeGame:
         self.food = self.spawn_food()
         self.score = 0
         self.running = True
+        self.font = pygame.font.SysFont("Arial", 24)
 
     def spawn_food(self):
         x = random.randint(0, (WIDTH // BLOCK_SIZE) - 1) * BLOCK_SIZE
@@ -31,6 +33,10 @@ class SnakeGame:
 
     def draw_food(self):
         pygame.draw.rect(self.screen, FOOD_COLOR, (*self.food, BLOCK_SIZE, BLOCK_SIZE))
+
+    def draw_score(self):
+        score_surface = self.font.render(f"Score: {self.score}", True, FONT_COLOR)
+        self.screen.blit(score_surface, (10, 10))  # 화면의 왼쪽 상단에 점수 표시
 
     def move_snake(self):
         head_x, head_y = self.snake[0]
@@ -69,6 +75,7 @@ class SnakeGame:
             self.check_collision()
             self.draw_snake()
             self.draw_food()
+            self.draw_score()  # 점수 그리기
 
             pygame.display.flip()
             self.clock.tick(10)  # 게임 속도 조절
